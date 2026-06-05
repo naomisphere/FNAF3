@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <vector>
 #include <cmath>
+#include <sstream>
 #include "main.hpp"
 #include "graphics.hpp"
 #include "objects.hpp"

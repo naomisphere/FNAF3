@@ -2,13 +2,15 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
+#include <sstream>
+#include <filesystem>
 
 SDL_Window *window;
 SDL_Renderer *renderer;
 SDL_Event event;
 
-const int SCREEN_WIDTH = 1024; // 1024
-const int SCREEN_HEIGHT = 768; // 768
+const int SCREEN_WIDTH = 1024;
+const int SCREEN_HEIGHT = 768;
 const bool START_AS_FULLSCREEN = false;
 bool MEASURE_FPS = false;
 bool VSYNC = false;
@@ -30,19 +32,14 @@ void initialize() {
 }
 
 std::string GetExecutableDirectory() {
-    char buffer[PATH_MAX];
-
 #ifdef _WIN32
+    char buffer[PATH_MAX];
     GetModuleFileName(NULL, buffer, sizeof(buffer));
-#else
-    ssize_t len = readlink("/proc/self/exe", buffer, sizeof(buffer) - 1);
-    if (len == -1) {
-        throw std::runtime_error("readlink failed");
-    }
-    buffer[len] = '\0';
-#endif
     std::string path(buffer);
     return path.substr(0, path.find_last_of("/\\"));
+#else
+    return std::filesystem::weakly_canonical(std::filesystem::current_path()).string();
+#endif
 }
 
 std::string GetParentDirectory(const std::string& directory) {
@@ -68,7 +65,6 @@ int main() {
     Graphics graphics = Graphics(window, renderer);
     std::cout << "2/4: Graphics initialized\n";
 
-    // Render loading screen
     SDL_RenderPresent(renderer);
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
